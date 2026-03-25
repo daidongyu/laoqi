@@ -1,1430 +1,1094 @@
-<!--
- * @Author: daidongyu daidongyu@cnuri.cn
- * @Date: 2026-03-25 11:37:04
- * @LastEditors: daidongyu daidongyu@cnuri.cn
- * @Description: 草原漫步 - 交互版
--->
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>草原漫步 - 交互版</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>翠翠格斗</title>
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      body {
-        width: 100vw;
-        height: 100vh;
-        overflow: hidden;
-        font-family: 'Microsoft YaHei', sans-serif;
-      }
-
-      .scene {
-        width: 100%;
-        height: 100%;
-        position: relative;
-        background: linear-gradient(
-          to bottom,
-          #87ceeb 0%,
-          #b0e0e6 30%,
-          #98fb98 60%,
-          #90ee90 80%,
-          #228b22 100%
-        );
-        overflow: hidden;
-      }
-
-      /* ===== 背景元素 ===== */
-      .sun {
-        position: absolute;
-        top: 8%;
-        right: 15%;
-        width: 100px;
-        height: 100px;
-        background: radial-gradient(
-          circle,
-          #ffd700 30%,
-          #ffa500 70%,
-          transparent 100%
-        );
-        border-radius: 50%;
-        box-shadow: 0 0 60px rgba(255, 215, 0, 0.6);
-        animation: sunPulse 4s ease-in-out infinite;
-      }
-      @keyframes sunPulse {
-        0%,
-        100% {
-          transform: scale(1);
-        }
-        50% {
-          transform: scale(1.05);
-        }
-      }
-
-      .cloud {
-        position: absolute;
-        background: rgba(255, 255, 255, 0.9);
-        border-radius: 100px;
-      }
-      .cloud::before,
-      .cloud::after {
-        content: '';
-        position: absolute;
-        background: rgba(255, 255, 255, 0.9);
-        border-radius: 100px;
-      }
-      .cloud1 {
-        width: 120px;
-        height: 50px;
-        top: 12%;
-        left: -150px;
-        animation: float 25s infinite linear;
-      }
-      .cloud1::before {
-        width: 60px;
-        height: 60px;
-        top: -30px;
-        left: 15px;
-      }
-      .cloud1::after {
-        width: 70px;
-        height: 50px;
-        top: -20px;
-        right: 15px;
-      }
-      @keyframes float {
-        0% {
-          transform: translateX(0);
-        }
-        100% {
-          transform: translateX(calc(100vw + 300px));
-        }
-      }
-
-      .mountains {
-        position: absolute;
-        bottom: 35%;
-        left: 0;
-        width: 100%;
-        height: 30%;
-      }
-      .mountain {
-        position: absolute;
-        bottom: 0;
-        width: 0;
-        height: 0;
-        border-style: solid;
-      }
-      .mountain1 {
-        left: -5%;
-        border-left: 200px solid transparent;
-        border-right: 200px solid transparent;
-        border-bottom: 150px solid #6b8e6b;
-      }
-      .mountain2 {
-        left: 25%;
-        border-left: 250px solid transparent;
-        border-right: 250px solid transparent;
-        border-bottom: 200px solid #556b55;
-      }
-      .mountain3 {
-        left: 60%;
-        border-left: 180px solid transparent;
-        border-right: 180px solid transparent;
-        border-bottom: 130px solid #6b8e6b;
-      }
-      .mountain4 {
-        left: 80%;
-        border-left: 220px solid transparent;
-        border-right: 220px solid transparent;
-        border-bottom: 170px solid #556b55;
-      }
-
-      .grass-back {
-        position: absolute;
-        bottom: 0;
-        width: 100%;
-        height: 40%;
-        background: linear-gradient(to bottom, #7cb87c 0%, #5fa05f 100%);
-        clip-path: polygon(
-          0% 100%,
-          0% 20%,
-          5% 15%,
-          10% 25%,
-          15% 18%,
-          20% 28%,
-          25% 15%,
-          30% 25%,
-          35% 20%,
-          40% 30%,
-          45% 18%,
-          50% 25%,
-          55% 15%,
-          60% 28%,
-          65% 20%,
-          70% 25%,
-          75% 18%,
-          80% 28%,
-          85% 15%,
-          90% 25%,
-          95% 20%,
-          100% 30%,
-          100% 100%
-        );
-      }
-      .grass-front {
-        position: absolute;
-        bottom: 0;
-        width: 100%;
-        height: 25%;
-        background: linear-gradient(to bottom, #228b22 0%, #006400 100%);
-        clip-path: polygon(
-          0% 100%,
-          0% 30%,
-          3% 25%,
-          7% 35%,
-          12% 28%,
-          17% 38%,
-          22% 25%,
-          27% 35%,
-          32% 28%,
-          37% 38%,
-          42% 25%,
-          47% 35%,
-          52% 28%,
-          57% 38%,
-          62% 25%,
-          67% 35%,
-          72% 28%,
-          77% 38%,
-          82% 25%,
-          87% 35%,
-          92% 28%,
-          97% 38%,
-          100% 30%,
-          100% 100%
-        );
-      }
-
-      /* ===== 小人 ===== */
-      .character {
-        position: absolute;
-        bottom: 15%;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 100px;
-        height: 160px;
-        z-index: 10;
-        transition: all 0.3s ease;
-      }
-
-      /* 头部 */
-      .head {
-        position: absolute;
-        top: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 70px;
-        height: 70px;
-        border-radius: 50%;
-        background-image: url('./cuicui.jpg');
-        background-size: cover;
-        background-position: center;
-        border: 3px solid #333;
-        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
-        z-index: 5;
-        transition: all 0.3s ease;
-      }
-
-      /* 表情元素 - 默认隐藏 */
-      .face-expression {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-        pointer-events: none;
-        opacity: 0;
-        transition: opacity 0.3s;
-      }
-      .face-expression.active {
-        opacity: 1;
-      }
-
-      /* 月牙眼 */
-      .moon-eyes {
-        position: absolute;
-        top: 35%;
-        width: 100%;
-      }
-      .moon-eye {
-        position: absolute;
-        width: 14px;
-        height: 8px;
-        border: 3px solid #333;
-        border-top: none;
-        border-radius: 0 0 14px 14px;
-        background: transparent;
-      }
-      .moon-eye.left {
-        left: 18%;
-      }
-      .moon-eye.right {
-        right: 18%;
-      }
-
-      /* 上扬嘴 */
-      .smile-mouth {
-        position: absolute;
-        bottom: 25%;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 25px;
-        height: 12px;
-        border: 3px solid #333;
-        border-top: none;
-        border-radius: 0 0 25px 25px;
-        background: #ff6b6b;
-      }
-
-      /* 下垂嘴 */
-      .sad-mouth {
-        position: absolute;
-        bottom: 20%;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 20px;
-        height: 10px;
-        border: 3px solid #333;
-        border-bottom: none;
-        border-radius: 25px 25px 0 0;
-        background: transparent;
-      }
-
-      /* 眼泪 */
-      .tear {
-        position: absolute;
-        top: 45%;
-        width: 8px;
-        height: 12px;
-        background: linear-gradient(to bottom, #87ceeb, #4a90e2);
-        border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-        opacity: 0;
-        animation: tearDrop 1s ease-in infinite;
-      }
-      .tear.left {
-        left: 20%;
-      }
-      .tear.right {
-        right: 20%;
-        animation-delay: 0.3s;
-      }
-      @keyframes tearDrop {
-        0% {
-          opacity: 1;
-          transform: translateY(0);
-        }
-        100% {
-          opacity: 0;
-          transform: translateY(20px);
-        }
-      }
-
-      /* 红印 */
-      .slap-mark {
-        position: absolute;
-        top: 40%;
-        right: 5%;
-        width: 25px;
-        height: 30px;
-        background: radial-gradient(ellipse, rgba(255, 0, 0, 0.6), transparent);
-        border-radius: 50%;
-        opacity: 0;
-        transform: rotate(-15deg);
-      }
-
-      /* Zzz */
-      .zzz {
-        position: absolute;
-        top: -30px;
-        right: -20px;
-        font-size: 20px;
-        font-weight: bold;
-        color: #666;
-        opacity: 0;
-      }
-      .zzz:nth-child(1) {
-        animation: zzzFloat 2s ease-in-out infinite;
-      }
-      .zzz:nth-child(2) {
-        animation: zzzFloat 2s ease-in-out infinite 0.6s;
-      }
-      .zzz:nth-child(3) {
-        animation: zzzFloat 2s ease-in-out infinite 1.2s;
-      }
-      @keyframes zzzFloat {
-        0% {
-          opacity: 0;
-          transform: translateY(0) translateX(0) scale(0.5);
-        }
-        50% {
-          opacity: 1;
-        }
-        100% {
-          opacity: 0;
-          transform: translateY(-30px) translateX(10px) scale(1.2);
-        }
-      }
-
-      /* 爱心 */
-      .heart {
-        position: absolute;
-        top: -40px;
-        font-size: 24px;
-        color: #ff69b4;
-        opacity: 0;
-        animation: heartFloat 1.5s ease-out forwards;
-      }
-      @keyframes heartFloat {
-        0% {
-          opacity: 1;
-          transform: translateY(0) scale(0.5);
-        }
-        100% {
-          opacity: 0;
-          transform: translateY(-50px) scale(1);
-        }
-      }
-
-      /* 星星 */
-      .star {
-        position: absolute;
-        font-size: 20px;
-        color: #ffd700;
-        opacity: 0;
-      }
-      .star:nth-child(1) {
-        top: -20px;
-        left: -10px;
-        animation: starPop 0.8s ease-out infinite;
-      }
-      .star:nth-child(2) {
-        top: -35px;
-        left: 50%;
-        animation: starPop 0.8s ease-out infinite 0.2s;
-      }
-      .star:nth-child(3) {
-        top: -20px;
-        right: -10px;
-        animation: starPop 0.8s ease-out infinite 0.4s;
-      }
-      @keyframes starPop {
-        0%,
-        100% {
-          opacity: 0;
-          transform: scale(0) rotate(0deg);
-        }
-        50% {
-          opacity: 1;
-          transform: scale(1) rotate(180deg);
-        }
-      }
-
-      /* 身体 */
-      .body {
-        position: absolute;
-        top: 65px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 40px;
-        height: 50px;
-        background: linear-gradient(to bottom, #ff6b6b 0%, #ee5a5a 100%);
-        border-radius: 15px 15px 5px 5px;
-        border: 2px solid #333;
-        z-index: 4;
-        transition: all 0.3s ease;
-      }
-
-      /* 手臂 */
-      .arm {
-        position: absolute;
-        top: 70px;
-        width: 12px;
-        height: 35px;
-        background: linear-gradient(to bottom, #ffd93d 0%, #f4d03f 100%);
-        border-radius: 10px;
-        border: 2px solid #333;
-        transform-origin: top center;
-        z-index: 3;
-        transition: all 0.3s ease;
-      }
-      .arm.left {
-        left: 18px;
-      }
-      .arm.right {
-        right: 18px;
-      }
-
-      /* 腿 */
-      .leg {
-        position: absolute;
-        top: 110px;
-        width: 14px;
-        height: 40px;
-        background: linear-gradient(to bottom, #4a90e2 0%, #357abd 100%);
-        border-radius: 10px;
-        border: 2px solid #333;
-        transform-origin: top center;
-        z-index: 3;
-        transition: all 0.3s ease;
-      }
-      .leg.left {
-        left: 28px;
-      }
-      .leg.right {
-        right: 28px;
-      }
-      .foot {
-        position: absolute;
-        bottom: -5px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 18px;
-        height: 10px;
-        background: #333;
-        border-radius: 5px 5px 0 0;
-      }
-
-      /* ===== 动作状态 ===== */
-
-      /* 开心 */
-      .character.happy {
-        animation: happyShake 0.5s ease-in-out infinite;
-      }
-      .character.happy .body {
-        animation: bodyBounce 0.5s ease-in-out infinite;
-      }
-      @keyframes happyShake {
-        0%,
-        100% {
-          transform: translateX(-50%) rotate(-3deg);
-        }
-        50% {
-          transform: translateX(-50%) rotate(3deg);
-        }
-      }
-      @keyframes bodyBounce {
-        0%,
-        100% {
-          transform: translateX(-50%) translateY(0);
-        }
-        50% {
-          transform: translateX(-50%) translateY(-5px);
-        }
-      }
-
-      /* 委屈 */
-      .character.sad {
-        transform: translateX(-50%) rotate(5deg);
-      }
-      .character.sad .head {
-        transform: translateX(-50%) rotate(15deg) translateY(5px);
-      }
-      .character.sad .body {
-        transform: translateX(-50%) rotate(-5deg);
-      }
-      .character.sad .arm.left {
-        transform: rotate(45deg) translateY(10px);
-      }
-      .character.sad .arm.right {
-        transform: rotate(-45deg) translateY(10px);
-      }
-      .character.sad .tear {
-        opacity: 1;
-      }
-
-      /* 扇耳光 */
-      .character.slap .arm.right {
-        animation: slapArm 0.6s ease-out forwards;
-      }
-      @keyframes slapArm {
-        0% {
-          transform: rotate(-120deg);
-        }
-        50% {
-          transform: rotate(10deg);
-        }
-        100% {
-          transform: rotate(0deg);
-        }
-      }
-      .character.slap .head {
-        animation: slapHead 0.6s ease-out forwards;
-      }
-      @keyframes slapHead {
-        0% {
-          transform: translateX(-50%) rotate(0deg);
-        }
-        50% {
-          transform: translateX(-50%) rotate(-20deg) translateX(-10px);
-        }
-        100% {
-          transform: translateX(-50%) rotate(0deg);
-        }
-      }
-      .character.slap .slap-mark {
-        animation: slapMark 0.6s ease-out forwards;
-      }
-      @keyframes slapMark {
-        0%,
-        50% {
-          opacity: 0;
-        }
-        60% {
-          opacity: 1;
-        }
-        100% {
-          opacity: 0.8;
-        }
-      }
-
-      /* 蹦高高 */
-      .character.jump {
-        animation: jumpHigh 1s ease-out forwards;
-      }
-      @keyframes jumpHigh {
-        0% {
-          transform: translateX(-50%) translateY(0);
-        }
-        20% {
-          transform: translateX(-50%) translateY(20px);
-        }
-        50% {
-          transform: translateX(-50%) translateY(-150px);
-        }
-        80% {
-          transform: translateX(-50%) translateY(0);
-        }
-        90% {
-          transform: translateX(-50%) translateY(-10px);
-        }
-        100% {
-          transform: translateX(-50%) translateY(0);
-        }
-      }
-      .character.jump .arm.left {
-        animation: jumpArm 1s ease-out forwards;
-      }
-      .character.jump .arm.right {
-        animation: jumpArm 1s ease-out forwards;
-      }
-      @keyframes jumpArm {
-        0%,
-        20% {
-          transform: rotate(-30deg);
-        }
-        50% {
-          transform: rotate(-150deg);
-        }
-        80%,
-        100% {
-          transform: rotate(-30deg);
-        }
-      }
-      .character.jump .leg.left {
-        animation: jumpLeg 1s ease-out forwards;
-      }
-      .character.jump .leg.right {
-        animation: jumpLeg 1s ease-out forwards;
-      }
-      @keyframes jumpLeg {
-        0%,
-        20% {
-          transform: rotate(0deg);
-        }
-        50% {
-          transform: rotate(-20deg);
-        }
-        80%,
-        100% {
-          transform: rotate(0deg);
-        }
-      }
-
-      /* 睡觉 */
-      .character.sleep {
-        transform: translateX(-50%) rotate(90deg) translateY(30px);
-        transition: transform 1s ease;
-      }
-      .character.sleep .head {
-        transform: translateX(-50%) rotate(-90deg);
-      }
-      .character.sleep .zzz {
-        opacity: 1;
-      }
-      .character.sleep .body {
-        animation: breathe 2s ease-in-out infinite;
-      }
-      @keyframes breathe {
-        0%,
-        100% {
-          transform: translateX(-50%) scaleY(1);
-        }
-        50% {
-          transform: translateX(-50%) scaleY(1.05);
-        }
-      }
-
-      /* 投喂 */
-      .food {
-        position: absolute;
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%) scale(0);
-        width: 30px;
-        height: 30px;
-        background: #8b4513;
-        border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-        border: 2px solid #333;
-        z-index: 20;
-      }
-      .food::before {
-        content: '';
-        position: absolute;
-        top: 5px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 15px;
-        height: 8px;
-        background: #d2691e;
-        border-radius: 50%;
-      }
-      .character.eat .food {
-        animation: foodGive 2s ease-out forwards;
-      }
-      @keyframes foodGive {
-        0% {
-          transform: translateX(-50%) scale(0) translateY(0);
-        }
-        30% {
-          transform: translateX(-50%) scale(1) translateY(0);
-        }
-        60% {
-          transform: translateX(-50%) scale(1) translateY(40px);
-        }
-        80% {
-          transform: translateX(-50%) scale(0.5) translateY(50px);
-          opacity: 0;
-        }
-        100% {
-          opacity: 0;
-        }
-      }
-      .character.eat .arm.left {
-        animation: eatArm 2s ease-out forwards;
-      }
-      @keyframes eatArm {
-        0%,
-        30% {
-          transform: rotate(-45deg);
-        }
-        60% {
-          transform: rotate(-90deg);
-        }
-        100% {
-          transform: rotate(0deg);
-        }
-      }
-      .character.eat .head {
-        animation: eatHead 2s ease-out forwards;
-      }
-      @keyframes eatHead {
-        0%,
-        50% {
-          transform: translateX(-50%) rotate(0deg);
-        }
-        60%,
-        80% {
-          transform: translateX(-50%) rotate(-10deg);
-        }
-        100% {
-          transform: translateX(-50%) rotate(0deg);
-        }
-      }
-
-      /* 喝水 */
-      .cup {
-        position: absolute;
-        top: 30px;
-        left: 30%;
-        transform: scale(0);
-        width: 25px;
-        height: 30px;
-        background: linear-gradient(to bottom, #87ceeb, #4a90e2);
-        border: 2px solid #333;
-        border-radius: 0 0 10px 10px;
-        z-index: 20;
-      }
-      .cup::before {
-        content: '';
-        position: absolute;
-        top: 5px;
-        right: -10px;
-        width: 10px;
-        height: 15px;
-        border: 3px solid #333;
-        border-left: none;
-        border-radius: 0 10px 10px 0;
-      }
-      .character.drink .cup {
-        animation: cupDrink 2.5s ease-out forwards;
-      }
-      @keyframes cupDrink {
-        0% {
-          transform: scale(0);
-        }
-        20% {
-          transform: scale(1);
-        }
-        70% {
-          transform: scale(1) rotate(-45deg) translateY(-10px);
-        }
-        90% {
-          transform: scale(1) rotate(0deg);
-        }
-        100% {
-          transform: scale(0);
-        }
-      }
-      .character.drink .arm.left {
-        animation: drinkArm 2.5s ease-out forwards;
-      }
-      @keyframes drinkArm {
-        0%,
-        20% {
-          transform: rotate(0deg);
-        }
-        30%,
-        70% {
-          transform: rotate(-130deg);
-        }
-        90%,
-        100% {
-          transform: rotate(0deg);
-        }
-      }
-      .character.drink .head {
-        animation: drinkHead 2.5s ease-out forwards;
-      }
-      @keyframes drinkHead {
-        0%,
-        30% {
-          transform: translateX(-50%) rotate(0deg);
-        }
-        40%,
-        70% {
-          transform: translateX(-50%) rotate(-30deg);
-        }
-        90%,
-        100% {
-          transform: translateX(-50%) rotate(0deg);
-        }
-      }
-      .water-drop {
-        position: absolute;
-        top: 50%;
-        left: 60%;
-        width: 6px;
-        height: 8px;
-        background: #4a90e2;
-        border-radius: 50%;
-        opacity: 0;
-      }
-      .character.drink .water-drop {
-        animation: waterDropAnim 2.5s ease-out forwards;
-      }
-      @keyframes waterDropAnim {
-        0%,
-        35% {
-          opacity: 0;
-        }
-        40% {
-          opacity: 1;
-          transform: translateY(0);
-        }
-        50% {
-          opacity: 1;
-          transform: translateY(15px);
-        }
-        60%,
-        100% {
-          opacity: 0;
-        }
-      }
-
-      /* 奔跑 */
-      .character.run {
-        animation: runMove 0.3s ease-in-out infinite;
-      }
-      @keyframes runMove {
-        0%,
-        100% {
-          transform: translateX(-50%) translateY(0) rotate(-5deg);
-        }
-        50% {
-          transform: translateX(-50%) translateY(-10px) rotate(5deg);
-        }
-      }
-      .character.run .body {
-        transform: translateX(-50%) rotate(25deg);
-      }
-      .character.run .arm.left {
-        animation: runArmLeft 0.3s linear infinite;
-      }
-      .character.run .arm.right {
-        animation: runArmRight 0.3s linear infinite;
-      }
-      @keyframes runArmLeft {
-        0% {
-          transform: rotate(-45deg);
-        }
-        50% {
-          transform: rotate(45deg);
-        }
-        100% {
-          transform: rotate(-45deg);
-        }
-      }
-      @keyframes runArmRight {
-        0% {
-          transform: rotate(45deg);
-        }
-        50% {
-          transform: rotate(-45deg);
-        }
-        100% {
-          transform: rotate(45deg);
-        }
-      }
-      .character.run .leg.left {
-        animation: runLegLeft 0.3s linear infinite;
-      }
-      .character.run .leg.right {
-        animation: runLegRight 0.3s linear infinite;
-      }
-      @keyframes runLegLeft {
-        0% {
-          transform: rotate(-40deg);
-        }
-        50% {
-          transform: rotate(40deg);
-        }
-        100% {
-          transform: rotate(-40deg);
-        }
-      }
-      @keyframes runLegRight {
-        0% {
-          transform: rotate(40deg);
-        }
-        50% {
-          transform: rotate(-40deg);
-        }
-        100% {
-          transform: rotate(40deg);
-        }
-      }
-      .dust {
-        position: absolute;
-        bottom: -10px;
-        left: 50%;
-        width: 15px;
-        height: 15px;
-        background: rgba(139, 119, 101, 0.6);
-        border-radius: 50%;
-        opacity: 0;
-      }
-      .character.run .dust {
-        animation: dustKick 0.3s linear infinite;
-      }
-      @keyframes dustKick {
-        0% {
-          opacity: 0.8;
-          transform: translateX(0) scale(1);
-        }
-        100% {
-          opacity: 0;
-          transform: translateX(-30px) scale(0.5);
-        }
-      }
-
-      /* 抚摸 */
-      .pet-hand {
-        position: absolute;
-        top: -80px;
-        left: 50%;
-        transform: translateX(-50%) translateY(-100px);
-        width: 60px;
-        height: 50px;
-        background: #fdbcb4;
-        border: 3px solid #333;
-        border-radius: 20px 20px 40px 40px;
-        z-index: 30;
-        opacity: 0;
-      }
-      .pet-hand::before {
-        content: '';
-        position: absolute;
-        top: -15px;
-        left: 5px;
-        width: 15px;
-        height: 25px;
-        background: #fdbcb4;
-        border: 3px solid #333;
-        border-radius: 15px;
-        border-bottom: none;
-      }
-      .pet-hand::after {
-        content: '';
-        position: absolute;
-        top: -15px;
-        right: 5px;
-        width: 15px;
-        height: 25px;
-        background: #fdbcb4;
-        border: 3px solid #333;
-        border-radius: 15px;
-        border-bottom: none;
-      }
-      .character.pet .pet-hand {
-        animation: petHand 2s ease-out forwards;
-      }
-      @keyframes petHand {
-        0% {
-          opacity: 1;
-          transform: translateX(-50%) translateY(-100px);
-        }
-        30% {
-          opacity: 1;
-          transform: translateX(-50%) translateY(0);
-        }
-        70% {
-          opacity: 1;
-          transform: translateX(-50%) translateY(0);
-        }
-        100% {
-          opacity: 0;
-          transform: translateX(-50%) translateY(-50px);
-        }
-      }
-      .character.pet .head {
-        animation: petHead 2s ease-out forwards;
-      }
-      @keyframes petHead {
-        0%,
-        30% {
-          transform: translateX(-50%) rotate(0deg);
-        }
-        40%,
-        60% {
-          transform: translateX(-50%) rotate(-10deg) translateX(-5px);
-        }
-        70%,
-        100% {
-          transform: translateX(-50%) rotate(0deg);
-        }
-      }
-
-      /* 抓蝴蝶 */
-      .butterfly {
-        position: absolute;
-        top: 20%;
-        left: 80%;
-        width: 30px;
-        height: 30px;
-        z-index: 15;
-      }
-      .butterfly-wing {
-        position: absolute;
-        width: 15px;
-        height: 20px;
-        background: linear-gradient(135deg, #ff6347, #ffd700, #ff69b4);
-        border-radius: 50% 10% 50% 10%;
-        border: 1px solid #333;
-        animation: butterflyFlap 0.2s infinite alternate;
-      }
-      .butterfly-wing.left {
-        left: 0;
-        transform: rotate(-20deg);
-      }
-      .butterfly-wing.right {
-        right: 0;
-        transform: rotate(20deg) scaleX(-1);
-      }
-      @keyframes butterflyFlap {
-        0% {
-          transform: rotate(-20deg) rotateY(0deg);
-        }
-        100% {
-          transform: rotate(-20deg) rotateY(60deg);
-        }
-      }
-      .butterfly-body {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 4px;
-        height: 20px;
-        background: #333;
-        border-radius: 2px;
-      }
-      .character.catch .butterfly {
-        animation: butterflyFly 3s ease-out forwards;
-      }
-      @keyframes butterflyFly {
-        0% {
-          left: 80%;
-          top: 20%;
-        }
-        50% {
-          left: 60%;
-          top: 30%;
-        }
-        70% {
-          left: 55%;
-          top: 35%;
-          opacity: 1;
-        }
-        75% {
-          opacity: 0;
-        }
-        100% {
-          opacity: 0;
-        }
-      }
-      .character.catch {
-        animation: catchTiptoe 3s ease-out forwards;
-      }
-      @keyframes catchTiptoe {
-        0%,
-        50% {
-          transform: translateX(-50%) translateY(0);
-        }
-        60%,
-        70% {
-          transform: translateX(-50%) translateY(-10px);
-        }
-        100% {
-          transform: translateX(-50%) translateY(0);
-        }
-      }
-      .character.catch .arm.left {
-        animation: catchArm 3s ease-out forwards;
-      }
-      .character.catch .arm.right {
-        animation: catchArm 3s ease-out forwards;
-      }
-      @keyframes catchArm {
-        0%,
-        60% {
-          transform: rotate(0deg);
-        }
-        70% {
-          transform: rotate(-100deg);
-        }
-        80%,
-        100% {
-          transform: rotate(0deg);
-        }
-      }
-      .catch-result {
-        position: absolute;
-        top: -40px;
-        left: 50%;
-        transform: translateX(-50%);
-        font-size: 30px;
-        opacity: 0;
-      }
-      .character.catch .catch-result {
-        animation: catchResult 3s ease-out forwards;
-      }
-      @keyframes catchResult {
-        0%,
-        74% {
-          opacity: 0;
-          transform: translateX(-50%) scale(0);
-        }
-        75% {
-          opacity: 1;
-          transform: translateX(-50%) scale(1.2);
-        }
-        90% {
-          opacity: 1;
-          transform: translateX(-50%) scale(1);
-        }
-        100% {
-          opacity: 0;
-        }
-      }
-
-      /* ===== 按钮面板 ===== */
-      .controls {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: rgba(0, 0, 0, 0.8);
-        padding: 15px;
-        z-index: 100;
-        display: flex;
-        justify-content: center;
-        gap: 10px;
-        flex-wrap: nowrap;
-        overflow: scroll;
-      }
-      .btn {
-        padding: 10px 18px;
-        background: linear-gradient(145deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border: none;
-        border-radius: 25px;
-        cursor: pointer;
-        font-size: 14px;
-        width: 100px;
-        font-weight: bold;
-        transition: all 0.2s;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-      }
-      .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-      }
-      .btn:active {
-        transform: translateY(0);
-      }
-      .btn:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-      .btn-happy {
-        background: linear-gradient(145deg, #ffd93d, #f6ad55);
-        color: #333;
-      }
-      .btn-sad {
-        background: linear-gradient(145deg, #74b9ff, #0984e3);
-      }
-      .btn-slap {
-        background: linear-gradient(145deg, #ff6b6b, #ee5a5a);
-      }
-      .btn-jump {
-        background: linear-gradient(145deg, #a8e6cf, #7fd1b9);
-        color: #333;
-      }
-      .btn-sleep {
-        background: linear-gradient(145deg, #dda0dd, #9370db);
-      }
-      .btn-eat {
-        background: linear-gradient(145deg, #ffdab9, #f4a460);
-        color: #333;
-      }
-      .btn-drink {
-        background: linear-gradient(145deg, #87ceeb, #4a90e2);
-      }
-      .btn-run {
-        background: linear-gradient(145deg, #ffaa7f, #ff7f50);
-      }
-      .btn-pet {
-        background: linear-gradient(145deg, #ffb6c1, #ff69b4);
-      }
-      .btn-catch {
-        background: linear-gradient(145deg, #98d8c8, #5fb3b3);
-      }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        
+        #gameContainer {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* 标题 */
+        .game-title {
+            text-align: center;
+            font-size: 48px;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease infinite;
+            text-shadow: 0 0 30px rgba(255,255,255,0.3);
+            margin-bottom: 20px;
+        }
+        
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        /* 血条区域 */
+        .health-bars {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 0 50px;
+        }
+        
+        .health-bar-container {
+            width: 400px;
+        }
+        
+        .player-name {
+            color: #fff;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .health-bar {
+            width: 100%;
+            height: 30px;
+            background: #333;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 3px solid #fff;
+            box-shadow: 0 0 20px rgba(255,255,255,0.3);
+        }
+        
+        .health-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+            border-radius: 12px;
+        }
+        
+        .player1-health {
+            background: linear-gradient(90deg, #00b894, #00cec9);
+        }
+        
+        .player2-health {
+            background: linear-gradient(90deg, #e74c3c, #c0392b);
+        }
+        
+        .vs-text {
+            font-size: 36px;
+            font-weight: bold;
+            color: #feca57;
+            text-shadow: 0 0 20px #feca57;
+        }
+        
+        /* 游戏区域 */
+        .game-area {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+        }
+        
+        .ground {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 80px;
+            background: linear-gradient(180deg, #7f8c8d 0%, #2c3e50 100%);
+            border-top: 5px solid #95a5a6;
+        }
+        
+        /* 角色 */
+        .character {
+            position: absolute;
+            bottom: 80px;
+            width: 120px;
+            height: 200px;
+            transition: transform 0.1s ease;
+        }
+        
+        .player1 {
+            left: 150px;
+        }
+        
+        .player2 {
+            right: 150px;
+            transform: scaleX(-1);
+        }
+        
+        /* 角色头部 */
+        .character-head {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto;
+            border: 4px solid #fff;
+            box-shadow: 0 0 20px rgba(255,255,255,0.5);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .player1 .character-head {
+            background: url('cuicui.jpg') center/cover;
+        }
+        
+        .player2 .character-head {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .player2 .character-head::after {
+            content: '嘉';
+            font-size: 40px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        /* 身体 */
+        .character-body {
+            width: 60px;
+            height: 80px;
+            margin: 5px auto;
+            border-radius: 10px;
+            position: relative;
+        }
+        
+        .player1 .character-body {
+            background: linear-gradient(180deg, #3498db, #2980b9);
+        }
+        
+        .player2 .character-body {
+            background: linear-gradient(180deg, #e74c3c, #c0392b);
+        }
+        
+        /* 手臂 */
+        .arm {
+            position: absolute;
+            width: 50px;
+            height: 15px;
+            background: #f1c40f;
+            border-radius: 10px;
+            top: 20px;
+            transition: transform 0.1s ease;
+        }
+        
+        .arm.left {
+            left: -40px;
+            transform-origin: right center;
+        }
+        
+        .arm.right {
+            right: -40px;
+            transform-origin: left center;
+        }
+        
+        /* 腿 */
+        .leg {
+            position: absolute;
+            width: 20px;
+            height: 60px;
+            background: #2c3e50;
+            border-radius: 10px;
+            bottom: -50px;
+            transition: transform 0.1s ease;
+        }
+        
+        .leg.left {
+            left: 10px;
+        }
+        
+        .leg.right {
+            right: 10px;
+        }
+        
+        /* 攻击动画 */
+        .punching .arm.right {
+            animation: punch 0.2s ease;
+        }
+        
+        .kicking .leg.right {
+            animation: kick 0.3s ease;
+        }
+        
+        .throwing {
+            animation: throw 0.5s ease;
+        }
+        
+        @keyframes punch {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(-90deg) translateX(30px); }
+        }
+        
+        @keyframes kick {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(-45deg) translateX(40px) translateY(-20px); }
+        }
+        
+        @keyframes throw {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(50px) rotate(10deg); }
+        }
+        
+        /* 受击动画 */
+        .hit {
+            animation: hitShake 0.3s ease;
+        }
+        
+        @keyframes hitShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px) rotate(-5deg); }
+            75% { transform: translateX(10px) rotate(5deg); }
+        }
+        
+        /* 跳跃 */
+        .jumping {
+            animation: jump 0.5s ease;
+        }
+        
+        @keyframes jump {
+            0%, 100% { bottom: 80px; }
+            50% { bottom: 250px; }
+        }
+        
+        /* 蹲下 */
+        .crouching {
+            transform: scaleY(0.6) translateY(80px);
+        }
+        
+        /* 特效 */
+        .effect {
+            position: absolute;
+            pointer-events: none;
+            animation: effectFade 0.5s ease forwards;
+        }
+        
+        @keyframes effectFade {
+            0% { opacity: 1; transform: scale(0.5); }
+            100% { opacity: 0; transform: scale(1.5); }
+        }
+        
+        /* 击打特效 - 基础 */
+        .hit-effect-1 {
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, #fff 0%, #ff6b6b 50%, transparent 70%);
+            border-radius: 50%;
+        }
+        
+        /* 击打特效 - 中级 */
+        .hit-effect-2 {
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, #fff 0%, #feca57 30%, #ff6b6b 60%, transparent 70%);
+            border-radius: 50%;
+            box-shadow: 0 0 30px #feca57;
+        }
+        
+        .hit-effect-2::before,
+        .hit-effect-2::after {
+            content: '💥';
+            position: absolute;
+            font-size: 30px;
+        }
+        
+        .hit-effect-2::before {
+            top: -20px;
+            left: -10px;
+        }
+        
+        .hit-effect-2::after {
+            bottom: -20px;
+            right: -10px;
+        }
+        
+        /* 击打特效 - 高级 */
+        .hit-effect-3 {
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, #fff 0%, #48dbfb 20%, #feca57 40%, #ff6b6b 60%, transparent 70%);
+            border-radius: 50%;
+            box-shadow: 0 0 50px #ff6b6b, 0 0 100px #feca57;
+        }
+        
+        .hit-effect-3::before {
+            content: '💥💥💥';
+            position: absolute;
+            font-size: 40px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        /* 击打特效 - 终极 */
+        .hit-effect-4 {
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, #fff 0%, #ff9ff3 10%, #48dbfb 25%, #feca57 40%, #ff6b6b 55%, #5f27cd 70%, transparent 80%);
+            border-radius: 50%;
+            box-shadow: 0 0 80px #ff6b6b, 0 0 120px #feca57, 0 0 160px #48dbfb;
+        }
+        
+        .hit-effect-4::before {
+            content: '🔥🔥🔥';
+            position: absolute;
+            font-size: 50px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .hit-effect-4::after {
+            content: '⚡BOSS⚡';
+            position: absolute;
+            font-size: 20px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 0 10px #000;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        /* 连击数显示 */
+        .combo-display {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
+            font-weight: bold;
+            color: #feca57;
+            text-shadow: 0 0 20px #feca57;
+            opacity: 0;
+            animation: comboPop 0.5s ease forwards;
+            z-index: 100;
+        }
+        
+        @keyframes comboPop {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(1) translateY(-50px); }
+        }
+        
+        /* 伤害数字 */
+        .damage-text {
+            position: absolute;
+            font-size: 32px;
+            font-weight: bold;
+            color: #e74c3c;
+            text-shadow: 2px 2px 4px #000;
+            animation: damageFloat 1s ease forwards;
+            z-index: 100;
+        }
+        
+        @keyframes damageFloat {
+            0% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-100px); }
+        }
+        
+        /* 控制面板 */
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .control-group {
+            background: rgba(255,255,255,0.1);
+            padding: 15px 25px;
+            border-radius: 15px;
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+        
+        .control-title {
+            color: #fff;
+            font-size: 16px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .keys {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .key {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(180deg, #ecf0f1 0%, #bdc3c7 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            color: #2c3e50;
+            box-shadow: 0 5px 0 #7f8c8d;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .key:active {
+            transform: translateY(5px);
+            box-shadow: 0 0 0 #7f8c8d;
+        }
+        
+        /* 开始/结束界面 */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .overlay.hidden {
+            display: none;
+        }
+        
+        .overlay-title {
+            font-size: 64px;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 30px;
+            animation: gradientShift 2s ease infinite;
+        }
+        
+        .overlay-subtitle {
+            font-size: 24px;
+            color: #fff;
+            margin-bottom: 40px;
+            text-align: center;
+            line-height: 1.6;
+        }
+        
+        .btn {
+            padding: 20px 60px;
+            font-size: 28px;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+        
+        .btn-start {
+            background: linear-gradient(45deg, #00b894, #00cec9);
+            color: #fff;
+            box-shadow: 0 0 30px rgba(0,206,201,0.5);
+        }
+        
+        .btn-start:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 50px rgba(0,206,201,0.8);
+        }
+        
+        .btn-restart {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: #fff;
+            box-shadow: 0 0 30px rgba(231,76,60,0.5);
+        }
+        
+        .btn-restart:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 50px rgba(231,76,60,0.8);
+        }
+        
+        /* 击打次数显示 */
+        .hit-counter {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.7);
+            padding: 10px 30px;
+            border-radius: 30px;
+            border: 2px solid #feca57;
+        }
+        
+        .hit-counter-text {
+            color: #feca57;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        /* 粒子效果 */
+        .particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        
+        /* 波动效果 */
+        .shockwave {
+            position: absolute;
+            border: 3px solid rgba(255,255,255,0.8);
+            border-radius: 50%;
+            animation: shockwave 0.6s ease forwards;
+            pointer-events: none;
+        }
+        
+        @keyframes shockwave {
+            0% { width: 0; height: 0; opacity: 1; }
+            100% { width: 300px; height: 300px; opacity: 0; }
+        }
+        
+        /* 击中闪光 */
+        .flash {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.3);
+            pointer-events: none;
+            animation: flash 0.1s ease forwards;
+        }
+        
+        @keyframes flash {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
     </style>
-  </head>
-  <body>
-    <div class="scene">
-      <div class="sun"></div>
-      <div class="cloud cloud1"></div>
-      <div class="mountains">
-        <div class="mountain mountain1"></div>
-        <div class="mountain mountain2"></div>
-        <div class="mountain mountain3"></div>
-        <div class="mountain mountain4"></div>
-      </div>
-      <div class="grass-back"></div>
-      <div class="grass-front"></div>
-
-      <!-- 小人 -->
-      <div class="character" id="character">
-        <!-- 抚摸的手 -->
-        <div class="pet-hand"></div>
-
-        <!-- 头部 -->
-        <div class="head">
-          <!-- 开心表情 -->
-          <div class="face-expression happy-face">
-            <div class="moon-eyes">
-              <div class="moon-eye left"></div>
-              <div class="moon-eye right"></div>
+</head>
+<body>
+    <div id="gameContainer">
+        <h1 class="game-title">🥊 翠翠格斗 - 嘉人挑战 🥊</h1>
+        
+        <!-- 血条 -->
+        <div class="health-bars">
+            <div class="health-bar-container">
+                <div class="player-name">👤 翠翠 (玩家)</div>
+                <div class="health-bar">
+                    <div class="health-fill player1-health" id="player1Health" style="width: 100%"></div>
+                </div>
             </div>
-            <div class="smile-mouth"></div>
-            <div class="star">⭐</div>
-            <div class="star">✨</div>
-            <div class="star">⭐</div>
-          </div>
-
-          <!-- 委屈表情 -->
-          <div class="face-expression sad-face">
-            <div class="tear left"></div>
-            <div class="tear right"></div>
-            <div class="sad-mouth"></div>
-          </div>
-
-          <!-- 红印 -->
-          <div class="face-expression slap-face">
-            <div class="slap-mark"></div>
-          </div>
-
-          <!-- Zzz -->
-          <div class="zzz">Z</div>
-          <div class="zzz">z</div>
-          <div class="zzz">z</div>
+            <div class="vs-text">VS</div>
+            <div class="health-bar-container">
+                <div class="player-name" style="text-align: right;">嘉人 (敌人) 👹</div>
+                <div class="health-bar">
+                    <div class="health-fill player2-health" id="player2Health" style="width: 100%"></div>
+                </div>
+            </div>
         </div>
-
-        <!-- 身体 -->
-        <div class="body"></div>
-
-        <!-- 手臂 -->
-        <div class="arm left"></div>
-        <div class="arm right"></div>
-
-        <!-- 腿 -->
-        <div class="leg left"><div class="foot"></div></div>
-        <div class="leg right"><div class="foot"></div></div>
-
-        <!-- 食物 -->
-        <div class="food"></div>
-
-        <!-- 杯子 -->
-        <div class="cup">
-          <div class="water-drop"></div>
+        
+        <!-- 游戏区域 -->
+        <div class="game-area" id="gameArea">
+            <div class="hit-counter">
+                <span class="hit-counter-text">击打次数: <span id="hitCount">0</span> / 100</span>
+            </div>
+            
+            <!-- 角色1 - 翠翠 -->
+            <div class="character player1" id="player1">
+                <div class="character-head"></div>
+                <div class="character-body">
+                    <div class="arm left"></div>
+                    <div class="arm right"></div>
+                    <div class="leg left"></div>
+                    <div class="leg right"></div>
+                </div>
+            </div>
+            
+            <!-- 角色2 - 嘉人 -->
+            <div class="character player2" id="player2">
+                <div class="character-head"></div>
+                <div class="character-body">
+                    <div class="arm left"></div>
+                    <div class="arm right"></div>
+                    <div class="leg left"></div>
+                    <div class="leg right"></div>
+                </div>
+            </div>
+            
+            <div class="ground"></div>
         </div>
-
-        <!-- 尘土 -->
-        <div class="dust"></div>
-
-        <!-- 蝴蝶 -->
-        <div class="butterfly">
-          <div class="butterfly-wing left"></div>
-          <div class="butterfly-body"></div>
-          <div class="butterfly-wing right"></div>
+        
+        <!-- 控制说明 -->
+        <div class="controls">
+            <div class="control-group">
+                <div class="control-title">🎮 移动</div>
+                <div class="keys">
+                    <div class="key">←</div>
+                    <div class="key">→</div>
+                    <div class="key">↑</div>
+                    <div class="key">↓</div>
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="control-title">👊 攻击</div>
+                <div class="keys">
+                    <div class="key">A</div>
+                    <div class="key">S</div>
+                    <div class="key">D</div>
+                </div>
+            </div>
         </div>
-
-        <!-- 抓蝴蝶结果 -->
-        <div class="catch-result">🦋</div>
-      </div>
     </div>
-
-    <!-- 控制按钮 -->
-    <div class="controls">
-      <button class="btn btn-happy" onclick="doAction('happy')">😊 开心</button>
-      <button class="btn btn-sad" onclick="doAction('sad')">😢 委屈</button>
-      <button class="btn btn-slap" onclick="doAction('slap')">👋 扇耳光</button>
-      <button class="btn btn-jump" onclick="doAction('jump')">⬆️ 蹦高高</button>
-      <button class="btn btn-sleep" onclick="doAction('sleep')">😴 睡觉</button>
-      <button class="btn btn-eat" onclick="doAction('eat')">🍞 投喂</button>
-      <button class="btn btn-drink" onclick="doAction('drink')">🥤 喝水</button>
-      <button class="btn btn-run" onclick="doAction('run')">🏃 奔跑</button>
-      <button class="btn btn-pet" onclick="doAction('pet')">🖐️ 抚摸</button>
-      <button class="btn btn-catch" onclick="doAction('catch')">
-        🦋 抓蝴蝶
-      </button>
+    
+    <!-- 开始界面 -->
+    <div class="overlay" id="startScreen">
+        <h1 class="overlay-title">🥊 翠翠格斗 🥊</h1>
+        <p class="overlay-subtitle">
+            击败嘉人！需要击打 100 次才能获胜！<br>
+            击打越多，特效越炫酷！
+        </p>
+        <button class="btn btn-start" onclick="startGame()">开始游戏</button>
+    </div>
+    
+    <!-- 游戏结束界面 -->
+    <div class="overlay hidden" id="gameOverScreen">
+        <h1 class="overlay-title" id="winnerText">🎉 胜利！</h1>
+        <p class="overlay-subtitle" id="gameOverSubtitle">
+            你成功击败了嘉人！<br>
+            总击打次数: <span id="finalHits">0</span>
+        </p>
+        <button class="btn btn-restart" onclick="restartGame()">再来一局</button>
     </div>
 
     <script>
-      const character = document.getElementById('character')
-      const buttons = document.querySelectorAll('.btn')
-      let currentAction = null
-
-      function disableButtons() {
-        buttons.forEach((btn) => (btn.disabled = true))
-      }
-
-      function enableButtons() {
-        buttons.forEach((btn) => (btn.disabled = false))
-      }
-
-      function resetCharacter() {
-        character.className = 'character'
-        document
-          .querySelectorAll('.face-expression')
-          .forEach((f) => f.classList.remove('active'))
-        document.querySelectorAll('.heart').forEach((h) => h.remove())
-      }
-
-      function doAction(action) {
-        if (currentAction) return
-        currentAction = action
-        disableButtons()
-        resetCharacter()
-
-        // 随机决定是否抓到蝴蝶
-        if (action === 'catch') {
-          const caught = Math.random() > 0.5
-          document.querySelector('.catch-result').textContent = caught
-            ? '🦋'
-            : '💨'
+        // 游戏状态
+        let gameState = {
+            isPlaying: false,
+            player1Health: 100,
+            player2Health: 100,
+            hitCount: 0,
+            targetHits: 100,
+            combo: 0,
+            lastHitTime: 0,
+            player1Pos: { x: 150, y: 80 },
+            player2Pos: { x: 930, y: 80 },
+            isJumping: false,
+            isCrouching: false
+        };
+        
+        // DOM 元素
+        const player1 = document.getElementById('player1');
+        const player2 = document.getElementById('player2');
+        const player1Health = document.getElementById('player1Health');
+        const player2Health = document.getElementById('player2Health');
+        const hitCountEl = document.getElementById('hitCount');
+        const gameArea = document.getElementById('gameArea');
+        const startScreen = document.getElementById('startScreen');
+        const gameOverScreen = document.getElementById('gameOverScreen');
+        const winnerText = document.getElementById('winnerText');
+        const gameOverSubtitle = document.getElementById('gameOverSubtitle');
+        const finalHits = document.getElementById('finalHits');
+        
+        // 按键状态
+        const keys = {};
+        
+        // 开始游戏
+        function startGame() {
+            gameState.isPlaying = true;
+            gameState.player1Health = 100;
+            gameState.player2Health = 100;
+            gameState.hitCount = 0;
+            gameState.combo = 0;
+            gameState.player1Pos = { x: 150, y: 80 };
+            
+            updateHealthBars();
+            updateHitCount();
+            
+            startScreen.classList.add('hidden');
+            gameOverScreen.classList.add('hidden');
+            
+            // 重置位置
+            player1.style.left = gameState.player1Pos.x + 'px';
+            player1.classList.remove('jumping', 'crouching');
+            
+            // 启动敌人AI
+            startEnemyAI();
         }
-
-        character.classList.add(action)
-
-        // 显示对应的表情
-        if (action === 'happy') {
-          document.querySelector('.happy-face').classList.add('active')
-          // 随机位置生成爱心
-          for (let i = 0; i < 5; i++) {
+        
+        // 重新开始
+        function restartGame() {
+            startGame();
+        }
+        
+        // 更新血条
+        function updateHealthBars() {
+            player1Health.style.width = gameState.player1Health + '%';
+            player2Health.style.width = gameState.player2Health + '%';
+        }
+        
+        // 更新击打次数
+        function updateHitCount() {
+            hitCountEl.textContent = gameState.hitCount;
+        }
+        
+        // 创建特效
+        function createHitEffect(x, y, level) {
+            const effect = document.createElement('div');
+            effect.className = `effect hit-effect-${level}`;
+            effect.style.left = x + 'px';
+            effect.style.top = y + 'px';
+            gameArea.appendChild(effect);
+            
+            setTimeout(() => effect.remove(), 500);
+        }
+        
+        // 创建伤害数字
+        function createDamageText(x, y, damage) {
+            const text = document.createElement('div');
+            text.className = 'damage-text';
+            text.textContent = '-' + damage;
+            text.style.left = x + 'px';
+            text.style.top = y + 'px';
+            gameArea.appendChild(text);
+            
+            setTimeout(() => text.remove(), 1000);
+        }
+        
+        // 创建连击显示
+        function createComboDisplay(combo) {
+            const display = document.createElement('div');
+            display.className = 'combo-display';
+            display.textContent = combo + ' 连击!';
+            gameArea.appendChild(display);
+            
+            setTimeout(() => display.remove(), 500);
+        }
+        
+        // 创建粒子效果
+        function createParticles(x, y, count, colors) {
+            for (let i = 0; i < count; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = x + 'px';
+                particle.style.top = y + 'px';
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                
+                const angle = (Math.PI * 2 * i) / count;
+                const velocity = 50 + Math.random() * 100;
+                const tx = Math.cos(angle) * velocity;
+                const ty = Math.sin(angle) * velocity;
+                
+                particle.style.animation = `none`;
+                particle.style.transition = 'all 0.5s ease';
+                
+                gameArea.appendChild(particle);
+                
+                requestAnimationFrame(() => {
+                    particle.style.transform = `translate(${tx}px, ${ty}px)`;
+                    particle.style.opacity = '0';
+                });
+                
+                setTimeout(() => particle.remove(), 500);
+            }
+        }
+        
+        // 创建冲击波
+        function createShockwave(x, y) {
+            const wave = document.createElement('div');
+            wave.className = 'shockwave';
+            wave.style.left = x + 'px';
+            wave.style.top = y + 'px';
+            gameArea.appendChild(wave);
+            
+            setTimeout(() => wave.remove(), 600);
+        }
+        
+        // 创建闪光
+        function createFlash() {
+            const flash = document.createElement('div');
+            flash.className = 'flash';
+            gameArea.appendChild(flash);
+            
+            setTimeout(() => flash.remove(), 100);
+        }
+        
+        // 根据击打次数获取特效等级
+        function getEffectLevel() {
+            const hits = gameState.hitCount;
+            if (hits < 20) return 1;
+            if (hits < 50) return 2;
+            if (hits < 80) return 3;
+            return 4;
+        }
+        
+        // 攻击
+        function attack(type) {
+            if (!gameState.isPlaying) return;
+            
+            // 检查距离
+            const distance = Math.abs(gameState.player1Pos.x - gameState.player2Pos.x);
+            if (distance > 300) return;
+            
+            // 播放攻击动画
+            player1.classList.add(type + 'ing');
+            setTimeout(() => player1.classList.remove(type + 'ing'), 500);
+            
+            // 计算伤害
+            let damage = 1;
+            let hitX = gameState.player2Pos.x + 60;
+            let hitY = 200;
+            
+            if (type === 'punch') {
+                damage = 1;
+            } else if (type === 'kick') {
+                damage = 2;
+            } else if (type === 'throw') {
+                damage = 3;
+            }
+            
+            // 应用伤害
+            gameState.hitCount += damage;
+            gameState.player2Health = Math.max(0, 100 - gameState.hitCount);
+            
+            // 连击系统
+            const now = Date.now();
+            if (now - gameState.lastHitTime < 1000) {
+                gameState.combo++;
+                if (gameState.combo > 2) {
+                    createComboDisplay(gameState.combo);
+                }
+            } else {
+                gameState.combo = 1;
+            }
+            gameState.lastHitTime = now;
+            
+            // 创建特效
+            const effectLevel = getEffectLevel();
+            createHitEffect(hitX - 30, hitY - 30, effectLevel);
+            createDamageText(hitX, hitY - 50, damage);
+            
+            // 高级特效
+            if (effectLevel >= 2) {
+                const colors = ['#ff6b6b', '#feca57', '#48dbfb'];
+                createParticles(hitX, hitY, 10 * effectLevel, colors);
+            }
+            
+            if (effectLevel >= 3) {
+                createShockwave(hitX, hitY);
+            }
+            
+            if (effectLevel >= 4) {
+                createFlash();
+            }
+            
+            // 受击动画
+            player2.classList.add('hit');
+            setTimeout(() => player2.classList.remove('hit'), 300);
+            
+            // 更新UI
+            updateHealthBars();
+            updateHitCount();
+            
+            // 检查游戏结束
+            if (gameState.hitCount >= gameState.targetHits) {
+                endGame(true);
+            }
+        }
+        
+        // 移动
+        function movePlayer(direction) {
+            if (!gameState.isPlaying) return;
+            if (gameState.isJumping) return;
+            
+            const speed = 20;
+            const minX = 50;
+            const maxX = 800;
+            
+            if (direction === 'left') {
+                gameState.player1Pos.x = Math.max(minX, gameState.player1Pos.x - speed);
+                player1.style.transform = 'scaleX(-1)';
+            } else if (direction === 'right') {
+                gameState.player1Pos.x = Math.min(maxX, gameState.player1Pos.x + speed);
+                player1.style.transform = 'scaleX(1)';
+            }
+            
+            player1.style.left = gameState.player1Pos.x + 'px';
+        }
+        
+        // 跳跃
+        function jump() {
+            if (!gameState.isPlaying || gameState.isJumping || gameState.isCrouching) return;
+            
+            gameState.isJumping = true;
+            player1.classList.add('jumping');
+            
             setTimeout(() => {
-              const heart = document.createElement('div')
-              heart.className = 'heart'
-              heart.textContent = '❤️'
-              heart.style.left = 30 + Math.random() * 40 + '%'
-              heart.style.top = -30 - Math.random() * 20 + 'px'
-              character.querySelector('.head').appendChild(heart)
-            }, i * 200)
-          }
-        } else if (action === 'sad') {
-          document.querySelector('.sad-face').classList.add('active')
-        } else if (action === 'slap') {
-          document.querySelector('.slap-face').classList.add('active')
+                player1.classList.remove('jumping');
+                gameState.isJumping = false;
+            }, 500);
         }
-
-        // 动作持续时间
-        const duration =
-          {
-            happy: 2000,
-            sad: 2500,
-            slap: 1500,
-            jump: 1500,
-            sleep: 3000,
-            eat: 2500,
-            drink: 2800,
-            run: 2000,
-            pet: 2500,
-            catch: 3500,
-          }[action] || 2000
-
-        setTimeout(() => {
-          resetCharacter()
-          currentAction = null
-          enableButtons()
-        }, duration)
-      }
+        
+        // 蹲下
+        function crouch(active) {
+            if (!gameState.isPlaying || gameState.isJumping) return;
+            
+            gameState.isCrouching = active;
+            if (active) {
+                player1.classList.add('crouching');
+            } else {
+                player1.classList.remove('crouching');
+            }
+        }
+        
+        // 敌人AI
+        function startEnemyAI() {
+            if (!gameState.isPlaying) return;
+            
+            // 敌人移动
+            const moveInterval = setInterval(() => {
+                if (!gameState.isPlaying) {
+                    clearInterval(moveInterval);
+                    return;
+                }
+                
+                // 向玩家移动
+                if (gameState.player2Pos.x > gameState.player1Pos.x + 200) {
+                    gameState.player2Pos.x -= 5;
+                } else if (gameState.player2Pos.x < gameState.player1Pos.x - 200) {
+                    gameState.player2Pos.x += 5;
+                }
+                
+                player2.style.right = (1200 - gameState.player2Pos.x - 120) + 'px';
+                
+                // 随机攻击
+                if (Math.random() < 0.02 && Math.abs(gameState.player2Pos.x - gameState.player1Pos.x) < 250) {
+                    enemyAttack();
+                }
+            }, 50);
+        }
+        
+        // 敌人攻击
+        function enemyAttack() {
+            player2.classList.add('punching');
+            setTimeout(() => player2.classList.remove('punching'), 200);
+            
+            // 玩家受伤
+            if (!gameState.isCrouching && !gameState.isJumping) {
+                gameState.player1Health = Math.max(0, gameState.player1Health - 5);
+                updateHealthBars();
+                
+                player1.classList.add('hit');
+                setTimeout(() => player1.classList.remove('hit'), 300);
+                
+                // 创建小特效
+                createHitEffect(gameState.player1Pos.x + 60, 200, 1);
+                
+                if (gameState.player1Health <= 0) {
+                    endGame(false);
+                }
+            }
+        }
+        
+        // 游戏结束
+        function endGame(playerWon) {
+            gameState.isPlaying = false;
+            
+            setTimeout(() => {
+                if (playerWon) {
+                    winnerText.textContent = '🎉 胜利！';
+                    winnerText.style.background = 'linear-gradient(45deg, #00b894, #00cec9)';
+                    winnerText.style.webkitBackgroundClip = 'text';
+                    gameOverSubtitle.innerHTML = `你成功击败了嘉人！<br>总击打次数: ${gameState.hitCount}`;
+                } else {
+                    winnerText.textContent = '💀 失败';
+                    winnerText.style.background = 'linear-gradient(45deg, #e74c3c, #c0392b)';
+                    winnerText.style.webkitBackgroundClip = 'text';
+                    gameOverSubtitle.innerHTML = `你被嘉人击败了！<br>总击打次数: ${gameState.hitCount}`;
+                }
+                
+                finalHits.textContent = gameState.hitCount;
+                gameOverScreen.classList.remove('hidden');
+            }, 500);
+        }
+        
+        // 键盘事件
+        document.addEventListener('keydown', (e) => {
+            if (!gameState.isPlaying) return;
+            
+            keys[e.key] = true;
+            
+            switch(e.key) {
+                case 'ArrowLeft':
+                case 'a':
+                case 'A':
+                    movePlayer('left');
+                    break;
+                case 'ArrowRight':
+                case 'd':
+                case 'D':
+                    movePlayer('right');
+                    break;
+                case 'ArrowUp':
+                case 'w':
+                case 'W':
+                    jump();
+                    break;
+                case 'ArrowDown':
+                case 's':
+                case 'S':
+                    crouch(true);
+                    break;
+            }
+            
+            // 攻击
+            if (e.key === 'a' || e.key === 'A') {
+                if (!e.repeat) attack('punch');
+            }
+            if (e.key === 's' || e.key === 'S') {
+                if (!e.repeat) attack('kick');
+            }
+            if (e.key === 'd' || e.key === 'D') {
+                if (!e.repeat) attack('throw');
+            }
+        });
+        
+        document.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+            
+            if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
+                crouch(false);
+            }
+        });
+        
+        // 防止方向键滚动页面
+        window.addEventListener('keydown', (e) => {
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+                e.preventDefault();
+            }
+        });
     </script>
-  </body>
+</body>
 </html>
